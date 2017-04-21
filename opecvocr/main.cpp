@@ -31,13 +31,152 @@ using namespace cv;
 
 
 
+////******************************  做灰度处理   二值化
+//int main(){
+//    
+//    String str="/Users/yangxuewu/Downloads/enenen.png";
+//   // String imagePath="/Users/yangxuewu/Downloads/221.png";
+//    String imagePath="/Users/yangxuewu/Downloads/image.JPG";
+//
+//    String outImagePath="/Users/yangxuewu/Downloads/result.png";
+//    
+//    Mat img = imread(imagePath);
+//    Mat gray;
+//    
+//    cvtColor(img, gray, CV_BGR2GRAY);
+//    // colorReduce(gray,gray,100);//  颜色空间缩减
+//    threshold(gray,gray,140,255,THRESH_BINARY);
+//    // cvNamedWindow("游戏原画");
+//    //  imshow("imageCvtColor",gray);
+//    
+//    
+//    //  namedWindow("gray", CV_WINDOW_NORMAL);
+//    //  imshow("img", img);
+//    imwrite(outImagePath,gray);
+//    imshow("gray", gray);
+//    
+//    waitKey(0);
+//    
+//}
 
-
-
-int main()
+//---------------------------------【colorReduce( )函数】---------------------------------
+//          描述：使用【指针访问：C操作符[ ]】方法版的颜色空间缩减函数
+//----------------------------------------------------------------------------------------------
+void colorReduce(Mat& inputImage, Mat& outputImage, int div)
 {
+    //参数准备
+    outputImage = inputImage.clone();  //拷贝实参到临时变量
+    int rowNumber = outputImage.rows;  //行数
+    int colNumber = outputImage.cols*outputImage.channels();  //列数 x 通道数=每一行元素的个数
+    
+    //双重循环，遍历所有的像素值
+    for(int i = 0;i < rowNumber;i++)  //行循环
+    {
+        uchar* data = outputImage.ptr<uchar>(i);  //获取第i行的首地址
+        for(int j = 0;j < colNumber;j++)   //列循环
+        {
+            // ---------【开始处理每个像素】-------------
+            data[j] = data[j]/div*div + div/2;
+            // ----------【处理结束】---------------------
+        }  //行处理结束
+    }
+}
 
-    imageCvtColor();
+
+
+
+
+int main21()
+{
+    
+    
+    //构建100×100的10通道8位矩阵
+    
+    //  Mat M;
+    // M.create(1,1,CV_8UC(10));
+    
+    
+    //构建一个100×100×100的8位三维矩阵
+    //    int sz[] = {1,1,1};
+    //    Mat M(3, sz, CV_32F, Scalar::all(0));
+    //
+    //第4行加上第6行的3倍赋值给第4行
+    //  Mat M(2,2,CV_8UC4,Scalar(1,2,3,4));
+    //M.row(0) = M.row(0) + M.row(1)*3;
+    // M.col(0)=M.col(0)+M.col(1)*3;
+    //  cout << "M (OpenCV默认风格) = " << M << ";" << endl << endl;
+    // M.at<double>(i,j);
+    
+    
+    
+    String str="/Users/yangxuewu/Downloads/1.jpg";
+    
+    //  Mat img(Size(320,240),CV_8UC3);
+    Mat imge;
+    Mat M=imread(str);
+    cvtColor(M, imge, CV_BGR2Lab);
+    imshow("1", imge);
+    
+    imshow("122", M);
+    
+    
+    
+    //    Mat roi(img, Rect(10,10,100,100));
+    //    roi = Scalar(0,255,0);
+    //  cout << "M (OpenCV默认风格) = " << M << ";" << endl << endl;
+    waitKey();
+    return 0 ;
+}
+
+//********************* 读取图片模式
+int mainImRead()
+{
+    
+    String str="/Users/yangxuewu/Downloads/1.jpg";
+    
+    Mat image1=imread(str,2);
+    Mat image2=imread(str,0);
+    Mat image3=imread(str,199);
+    imshow("1", image1);
+    imshow("2", image2);
+    imshow("3", image3);
+    waitKey(0);
+    return 0;
+}
+
+
+
+
+
+
+
+//**************************   读取视频
+int mainVideoCapture(){
+    
+    String str="/Users/yangxuewu/Downloads/video.mp4";
+    
+   	//【1】读入视频
+    VideoCapture capture(0);
+    
+    Mat edage;
+    //【2】循环显示每一帧
+    while(1)
+    {
+        Mat frame;//定义一个Mat变量，用于存储每一帧的图像
+        capture>>frame;  //读取当前帧
+        
+        cvtColor(frame, edage, COLOR_RGB2GRAY);
+        blur(edage, edage,Size(11,11));
+        Canny(edage, edage, 0, 30,3);
+        //若视频播放完成，退出循环
+        if (frame.empty())
+        {
+            break;
+        }
+        
+        imshow("读取视频",edage);  //显示当前帧
+        waitKey(30);  //延时30ms
+    }
     return 0;
 }
 
@@ -55,46 +194,51 @@ int main()
 
 
 
-//int main(  )
-//{
-//    String imagePath="/Users/yangxuewu/Desktop/癌蚌photo/IMG_8983.JPG";
-//    String str="/Users/yangxuewu/Downloads/enenen.png";
-//    
-// 
-//    Mat src,gray;
-//    src=imread(str);
-//    cvtColor(src,gray,CV_RGB2GRAY);
-//    int bins = 256;
-//    int hist_size[] = {bins};
-//    float range[] = { 0, 256 };
-//    const float* ranges[] = { range};
-//    MatND hist;
-//    int channels[] = {0};
-//    
-//    calcHist( &gray, 1, channels, Mat(), // do not use mask
-//             hist, 1, hist_size, ranges,
-//             true, // the histogram is uniform
-//             false );
-//    
-//    double max_val;
-//    minMaxLoc(hist, 0, &max_val, 0, 0);
-//    int scale = 2;
-//    int hist_height=256;
-//    Mat hist_img = Mat::zeros(hist_height,bins*scale, CV_8UC3);
-//    for(int i=0;i<bins;i++)
-//    {
-//        float bin_val = hist.at<float>(i);
-//        int intensity = cvRound(bin_val*hist_height/max_val);  //要绘制的高度
-//        rectangle(hist_img,Point(i*scale,hist_height-1),
-//                  Point((i+1)*scale - 1, hist_height - intensity),
-//                  CV_RGB(255,255,255));
-//    }
-//    imshow( "Source", src );
-//    imshow( "Gray Histogram", hist_img );
-//    waitKey(0);
-//    return 0;  
-//}
-//
+
+
+
+
+//***********************************************************************直方图
+int maincalcHist(  )
+{
+    String imagePath="/Users/yangxuewu/Desktop/癌蚌photo/IMG_8983.JPG";
+    String str="/Users/yangxuewu/Downloads/enenen.png";
+    
+    
+    Mat src,gray;
+    src=imread(str);
+    cvtColor(src,gray,CV_RGB2GRAY);
+    int bins = 256;
+    int hist_size[] = {bins};
+    float range[] = { 0, 256 };
+    const float* ranges[] = { range};
+    MatND hist;
+    int channels[] = {0};
+    
+    calcHist( &gray, 1, channels, Mat(), // do not use mask
+             hist, 1, hist_size, ranges,
+             true, // the histogram is uniform
+             false );
+    
+    double max_val;
+    minMaxLoc(hist, 0, &max_val, 0, 0);
+    int scale = 2;
+    int hist_height=256;
+    Mat hist_img = Mat::zeros(hist_height,bins*scale, CV_8UC3);
+    for(int i=0;i<bins;i++)
+    {
+        float bin_val = hist.at<float>(i);
+        int intensity = cvRound(bin_val*hist_height/max_val);  //要绘制的高度
+        rectangle(hist_img,Point(i*scale,hist_height-1),
+                  Point((i+1)*scale - 1, hist_height - intensity),
+                  CV_RGB(255,255,255));
+    }
+    imshow( "Source", src );
+    imshow( "Gray Histogram", hist_img );
+    waitKey(0);
+    return 0;
+}
+
 
 
 
@@ -186,7 +330,7 @@ void getContours(const char* filename)
     //Apply blur to smooth edges and use adapative thresholding
     cv::Size size(3,3);
     cv::GaussianBlur(img,img,size,0);
-//    cv::threshold( img,  img,  25, 255, THRESH_BINARY_INV);
+    //    cv::threshold( img,  img,  25, 255, THRESH_BINARY_INV);
     adaptiveThreshold(img, img,255,CV_ADAPTIVE_THRESH_MEAN_C, CV_THRESH_BINARY,31,10);
     cv::bitwise_not(img, img);
     
@@ -334,192 +478,121 @@ std::vector<cv::Rect> detectLetters(cv::Mat img)
 
 
 
-
-//int main(int argc,char** argv)
-//{
-//     String filename="/Users/yangxuewu/Downloads/7h4SJ.jpg";
-//      String filename1="/Users/yangxuewu/Downloads/8ipeJ.jpg";
-//    //Read
-//    cv::Mat img1=cv::imread("/Users/yangxuewu/Downloads/7h4SJ.jpg");
-//    cv::Mat img2=cv::imread("/Users/yangxuewu/Downloads/8ipeJ.jpg");
-//    
-//    //Detect
-//    std::vector<cv::Rect> letterBBoxes1=detectLetters(img1);
-//    std::vector<cv::Rect> letterBBoxes2=detectLetters(img2);
-// 
-//    //Display
-//    for(int i=0; i< letterBBoxes1.size(); i++)
-//        cv::rectangle(img1,letterBBoxes1[i],cv::Scalar(0,255,0),3,8,0);
-//    cv::imwrite( "7h4SJ.jpg", img1);
-//    imshow("7h4SJ.jpg",img1);
+//************************************** 文字看轮廓
+int main(int argc,char** argv)
+{
+    String filename="/Users/yangxuewu/Downloads/image.JPG";
+    String filename1="/Users/yangxuewu/Downloads/11.png";
+    String outImagePath="/Users/yangxuewu/Downloads/result1.png";
+    //
+    //Read
+    cv::Mat img1=cv::imread(filename);
+   // cv::Mat img2=cv::imread(filename1);
+    
+    //Detect
+    std::vector<cv::Rect> letterBBoxes1=detectLetters(img1);
+   // std::vector<cv::Rect> letterBBoxes2=detectLetters(img2);
+    
+    //Display
+    for(int i=0; i< letterBBoxes1.size(); i++)
+        cv::rectangle(img1,letterBBoxes1[i],cv::Scalar(0,255,0),3,8,0);
+    cv::imwrite(outImagePath, img1);
+    imshow("7h4SJ.jpg",img1);
+//   
 //    for(int i=0; i< letterBBoxes2.size(); i++)
 //        cv::rectangle(img2,letterBBoxes2[i],cv::Scalar(0,255,0),3,8,0);
 //    cv::imwrite( "8ipeJ.jpg", img2);
-//      imshow("8ipeJ.jpg",img2);
-//    waitKey(1000000);
-//    return 0;
-//}
-//
+//    imshow("8ipeJ.jpg",img2);
+    waitKey(1000000);
+    return 0;
+}
 
 
 
 
 
-//
-//int main(int argc,char** argv)
-//{
-//    String filename="/Users/yangxuewu/Downloads/8ipeJ.jpg";
-//    //String filename="/Users/yangxuewu/Downloads/7h4SJ.jpg";
-//    //String filename= "/Users/yangxuewu/Downloads/骨钉/jkfs-22-232-g001-l.jpg";
-//   // String filename= "/Users/yangxuewu/Downloads/骨钉/11111.png";
-//   //  String filename= "/Users/yangxuewu/Downloads/骨钉/A1.png";
-////     String filename= "/Users/yangxuewu/Downloads/骨钉/A.JPG";
-//    Mat large = imread(filename);
-//    Mat rgb;
-//    // downsample and use it for processing
-//    pyrDown(large, rgb);
-//    Mat small;
-//    cvtColor(rgb, small, CV_BGR2GRAY);
-//    // morphological gradient
-//    Mat grad;
-//    Mat morphKernel = getStructuringElement(MORPH_ELLIPSE, Size(3, 3));
-//    morphologyEx(small, grad, MORPH_GRADIENT, morphKernel);
-//    // binarize
-//    Mat bw;
-//    threshold(grad, bw, 0.0, 255.0, THRESH_BINARY | THRESH_OTSU);
-//    // connect horizontally oriented regions
-//    Mat connected;
-//    morphKernel = getStructuringElement(MORPH_RECT, Size(9, 1));
-//    morphologyEx(bw, connected, MORPH_CLOSE, morphKernel);
-//    // find contours
-//    Mat mask = Mat::zeros(bw.size(), CV_8UC1);
-//    vector<vector<Point>> contours;
-//    vector<Vec4i> hierarchy;
-//    findContours(connected, contours, hierarchy, CV_RETR_CCOMP, CV_CHAIN_APPROX_SIMPLE, Point(0, 0));
-//    // filter contours
-//    for(int idx = 0; idx >= 0; idx = hierarchy[idx][0])
-//    {
-//        Rect rect = boundingRect(contours[idx]);
-//        Mat maskROI(mask, rect);
-//        maskROI = Scalar(0, 0, 0);
-//        // fill the contour
-//        drawContours(mask, contours, idx, Scalar(255, 255, 255), CV_FILLED);
-//        // ratio of non-zero pixels in the filled region
-//        double r = (double)countNonZero(maskROI)/(rect.width*rect.height);
-//        
-//        if (r > .45 /* assume at least 45% of the area is filled if it contains text */
-//            &&
-//            (rect.height > 8 && rect.width > 8) /* constraints on region size */
-//            /* these two conditions alone are not very robust. better to use something
-//             like the number of significant peaks in a horizontal projection as a third condition */
-//            )
-//        {
-//            rectangle(rgb, rect, Scalar(0, 255, 0), 2);
-//        }
-//    }
-//    imshow("游戏原画",rgb);
-//  //  imwrite(OUTPUT_FOLDER_PATH + string("rgb.jpg"), rgb);
-//    waitKey(1000000);
-//    
-//    return 0;
-//}
 
 
-//
-//int main()
-//{
-//     String filename="/Users/yangxuewu/Downloads/8ipeJ.jpg";
-//    cv::Mat image = cv::imread(filename,0) ;
-//    std::vector<std::vector<cv::Point>> contours ;
-//    //获取轮廓不包括轮廓内的轮廓
-//    cv::findContours(image , contours ,
-//                     CV_RETR_EXTERNAL , CV_CHAIN_APPROX_NONE) ;
-//    cv::Mat result(image.size() , CV_8U , cv::Scalar(255)) ;
-//    cv::drawContours(result , contours ,
-//                     -1 , cv::Scalar(0) , 2) ;
-//    cv::imshow("resultImage" , result) ;
-//    
-//    //获取所有轮廓包括轮廓内的轮廓
-//    std::vector<std::vector<cv::Point>> allContours ;
-//    cv::Mat allContoursResult(image.size() , CV_8U , cv::Scalar(255)) ;
-//    cv::findContours(image , allContours ,
-//                     CV_RETR_LIST , CV_CHAIN_APPROX_NONE) ;
-//    cv::drawContours(allContoursResult , allContours ,-1 ,
-//                     cv::Scalar(0) , 2) ;
-//    cv::imshow("allContours" , allContoursResult) ;
-//    
-//    //获取轮廓的等级
-//    std::vector<cv::Vec4i> hierarchy ;
-//    cv::findContours(image , contours , hierarchy , CV_RETR_TREE ,
-//                     CV_CHAIN_APPROX_NONE) ;
-//    
-//    cv::waitKey(0) ;  
-//    return 0 ;  
-//}
+//************************************************************* 框出文字区域     优化过的
+int mainfindContours(int argc,char** argv)
+{
+    //    String filename="/Users/yangxuewu/Downloads/8ipeJ.jpg";
+    String filename="/Users/yangxuewu/Downloads/221.png";
+    String result="/Users/yangxuewu/Downloads/resuld.JPG";
+    //String filename= "/Users/yangxuewu/Downloads/骨钉/jkfs-22-232-g001-l.jpg";
+    // String filename= "/Users/yangxuewu/Downloads/骨钉/11111.png";
+    //  String filename= "/Users/yangxuewu/Downloads/骨钉/A1.png";
+    //String filename= "/Users/yangxuewu/Downloads/骨钉/goodImge.JPG";
+    Mat large = imread(filename);
+    Mat rgb;
+    // downsample and use it for processing
+    pyrDown(large, rgb);
+    Mat small;
+    cvtColor(rgb, small, CV_BGR2GRAY);
+    // morphological gradient
+    Mat grad;
+    Mat morphKernel = getStructuringElement(MORPH_ELLIPSE, Size(3, 3));
+    morphologyEx(small, grad, MORPH_GRADIENT, morphKernel);
+    // binarize
+    Mat bw;
+    threshold(grad, bw, 0.0, 255.0, THRESH_BINARY | THRESH_OTSU);
+    // connect horizontally oriented regions
+    Mat connected;
+    morphKernel = getStructuringElement(MORPH_RECT, Size(9, 1));
+    morphologyEx(bw, connected, MORPH_CLOSE, morphKernel);
+    // find contours
+    Mat mask = Mat::zeros(bw.size(), CV_8UC1);
+    vector<vector<Point>> contours;
+    vector<Vec4i> hierarchy;
+    findContours(connected, contours, hierarchy, CV_RETR_CCOMP, CV_CHAIN_APPROX_SIMPLE, Point(0, 0));
+    // filter contours
+    for(int idx = 0; idx >= 0; idx = hierarchy[idx][0])
+    {
+        Rect rect = boundingRect(contours[idx]);
+        Mat maskROI(mask, rect);
+        maskROI = Scalar(0, 0, 0);
+        // fill the contour
+        drawContours(mask, contours, idx, Scalar(255, 255, 255), CV_FILLED);
+        // ratio of non-zero pixels in the filled region
+        double r = (double)countNonZero(maskROI)/(rect.width*rect.height);
+        
+        if (r > .45 /* assume at least 45% of the area is filled if it contains text */
+            &&
+            (rect.height > 8 && rect.width > 8) /* constraints on region size */
+            /* these two conditions alone are not very robust. better to use something
+             like the number of significant peaks in a horizontal projection as a third condition */
+            )
+        {
+            rectangle(rgb, rect, Scalar(0, 255, 0), 2);
+        }
+    }
+    imshow("游戏原画",rgb);
+    imwrite(result, rgb);
+    waitKey(1000000);
+    
+    return 0;
+}
 
 
 
 
-//
-//
-//
+//********************************************************* 查找文字轮廓
 //int main(void){
-//    
+//
+//    // String filename="/Users/yangxuewu/Downloads/goodImge.JPG";
+//
+//    //String filename="/Users/yangxuewu/Downloads/11111.png";
+//
+//    String filename="/Users/yangxuewu/Downloads/eng.png";
+//
 ////    char* fileName;
 ////    cin>>fileName;
 //   // getContours(fileName);
 ////    getContours("/Users/yangxuewu/Downloads/example1.jpg");
-//   getContours("/Users/yangxuewu/Downloads/骨钉/jkfs-22-232-g001-l.jpg");
-////    getContours("/Users/yangxuewu/Downloads/骨钉/11111.png");
+//  // getContours(filename);
+//  //  getContours("/Users/yangxuewu/Downloads/eng.png");
 //
+//  getContours("/Users/yangxuewu/Downloads/11.png");
 //
-//    
 //}
 
-
-
-
-
-//double alpha; /**< 控制对比度 */
-//int beta;  /**< 控制亮度 */
-//
-//int main( int argc, char** argv )
-//{
-//    String filename="/Users/yangxuewu/Downloads/enenen.png";
-//    
-//    /// 读入用户提供的图像
-//    Mat image = imread(filename,0);
-//    Mat new_image = Mat::zeros( image.size(), image.type() );
-//    
-//    /// 初始化
-//    cout << " Basic Linear Transforms " << endl;
-//    cout << "-------------------------" << endl;
-//    cout << "* Enter the alpha value [1.0-3.0]: ";
-//    cin >> alpha;
-//    cout << "* Enter the beta value [0-100]: ";
-//    cin >> beta;
-//    
-//    /// 执行运算 new_image(i,j) = alpha*image(i,j) + beta
-//    for( int y = 0; y < image.rows; y++ )
-//    {
-//        for( int x = 0; x < image.cols; x++ )
-//        {
-//            for( int c = 0; c < 3; c++ )
-//            {
-//                new_image.at<Vec3b>(y,x)[c] = saturate_cast<uchar>( alpha*( image.at<Vec3b>(y,x)[c] ) + beta );
-//            }
-//        }
-//    }
-//    
-//    /// 创建窗口
-//    namedWindow("Original Image", 1);
-//    namedWindow("New Image", 1);
-//    
-//    /// 显示图像
-//    imshow("Original Image", image);
-//    imshow("New Image", new_image);
-//    
-//    /// 等待用户按键
-//    waitKey();
-//    return 0;
-//}
