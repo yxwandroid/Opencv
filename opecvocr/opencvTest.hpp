@@ -12,7 +12,7 @@
 #include <stdio.h>
 //灰度处理
 void imageCvtColor();
-
+bool MultiChannelBlending();
 #endif /* opencvTest_hpp */
 
 

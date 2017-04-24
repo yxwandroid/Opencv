@@ -30,6 +30,11 @@ using namespace std;
 using namespace cv;
 
 
+int main(){
+    MultiChannelBlending();
+    waitKey(0);
+    return 0;
+}
 
 ////******************************  做灰度处理   二值化
 //int main(){
@@ -56,6 +61,10 @@ using namespace cv;
 //    imshow("gray", gray);
 //    
 //    waitKey(0);
+//    
+//     return 0 ;
+//    
+//
 //    
 //}
 
@@ -129,21 +138,21 @@ int main21()
 }
 
 //********************* 读取图片模式
-int mainImRead()
-{
-    
-    String str="/Users/yangxuewu/Downloads/1.jpg";
-    
-    Mat image1=imread(str,2);
-    Mat image2=imread(str,0);
-    Mat image3=imread(str,199);
-    imshow("1", image1);
-    imshow("2", image2);
-    imshow("3", image3);
-    waitKey(0);
-    return 0;
-}
-
+//int main()
+//{
+//    
+//    String str="/Users/yangxuewu/Downloads/1.jpg";
+//    
+//    Mat image1=imread(str,2);
+//    Mat image2=imread(str,0);
+//    Mat image3=imread(str,199);
+//    imshow("1", image1);
+//    imshow("2", image2);
+//    imshow("3", image3);
+//    waitKey(0);
+//    return 0;
+//}
+//
 
 
 
@@ -479,33 +488,33 @@ std::vector<cv::Rect> detectLetters(cv::Mat img)
 
 
 //************************************** 文字看轮廓
-int main(int argc,char** argv)
-{
-    String filename="/Users/yangxuewu/Downloads/image.JPG";
-    String filename1="/Users/yangxuewu/Downloads/11.png";
-    String outImagePath="/Users/yangxuewu/Downloads/result1.png";
-    //
-    //Read
-    cv::Mat img1=cv::imread(filename);
-   // cv::Mat img2=cv::imread(filename1);
-    
-    //Detect
-    std::vector<cv::Rect> letterBBoxes1=detectLetters(img1);
-   // std::vector<cv::Rect> letterBBoxes2=detectLetters(img2);
-    
-    //Display
-    for(int i=0; i< letterBBoxes1.size(); i++)
-        cv::rectangle(img1,letterBBoxes1[i],cv::Scalar(0,255,0),3,8,0);
-    cv::imwrite(outImagePath, img1);
-    imshow("7h4SJ.jpg",img1);
-//   
-//    for(int i=0; i< letterBBoxes2.size(); i++)
-//        cv::rectangle(img2,letterBBoxes2[i],cv::Scalar(0,255,0),3,8,0);
-//    cv::imwrite( "8ipeJ.jpg", img2);
-//    imshow("8ipeJ.jpg",img2);
-    waitKey(1000000);
-    return 0;
-}
+//int main(int argc,char** argv)
+//{
+//    String filename="/Users/yangxuewu/Downloads/image.JPG";
+//    String filename1="/Users/yangxuewu/Downloads/11.png";
+//    String outImagePath="/Users/yangxuewu/Downloads/result1.png";
+//    //
+//    //Read
+//    cv::Mat img1=cv::imread(filename);
+//   // cv::Mat img2=cv::imread(filename1);
+//    
+//    //Detect
+//    std::vector<cv::Rect> letterBBoxes1=detectLetters(img1);
+//   // std::vector<cv::Rect> letterBBoxes2=detectLetters(img2);
+//    
+//    //Display
+//    for(int i=0; i< letterBBoxes1.size(); i++)
+//        cv::rectangle(img1,letterBBoxes1[i],cv::Scalar(0,255,0),3,8,0);
+//    cv::imwrite(outImagePath, img1);
+//    imshow("7h4SJ.jpg",img1);
+////   
+////    for(int i=0; i< letterBBoxes2.size(); i++)
+////        cv::rectangle(img2,letterBBoxes2[i],cv::Scalar(0,255,0),3,8,0);
+////    cv::imwrite( "8ipeJ.jpg", img2);
+////    imshow("8ipeJ.jpg",img2);
+//    waitKey(1000000);
+//    return 0;
+//}
 
 
 
@@ -577,7 +586,7 @@ int mainfindContours(int argc,char** argv)
 
 
 //********************************************************* 查找文字轮廓
-//int main(void){
+//int main(){
 //
 //    // String filename="/Users/yangxuewu/Downloads/goodImge.JPG";
 //
