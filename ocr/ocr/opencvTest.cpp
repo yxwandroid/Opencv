@@ -5,7 +5,7 @@
 //  Created by 杨学武 on 2017/4/18.
 //  Copyright © 2017年 yxw. All rights reserved.
 //
-
+#include <tesseract/baseapi.h>
 #include <opencv2/opencv.hpp>
 #include <opencv/cv.h>
 #include <opencv/highgui.h>
@@ -256,132 +256,10 @@ void imageCvtColor(){
     
 }
 
-struct Vec2D{
-    int x = 0,y = 0;
-};
 
-struct Box{
-    Vec2D min;
-    Vec2D max;
-    
-    void add(Vec2D vec){
-        min.x = std::min(vec.x,min.x);
-        min.y = std::min(vec.y,min.y);
-        
-        max.x = std::max(vec.x,max.x);
-        max.y = std::max(vec.y,max.y);
-    }
-};
 
-//************************************************************* 框出文字区域     优化过的
-int findContours()
-{
-//        String filename="/Users/yangxuewu/Downloads/Bonebutyl/WechatIMG11.jpeg";
-    String filename="/Users/yangxuewu/Downloads/221.png";
-    String outImagePath="/Users/yangxuewu/Downloads/ocrtext.png";
-//    String filename2="/Users/yangxuewu/Downloads/WechatIMG6.jpeg";
-    
-    String result="/Users/yangxuewu/Downloads/resuld.JPG";
-    //String filename= "/Users/yangxuewu/Downloads/骨钉/jkfs-22-232-g001-l.jpg";
-    // String filename= "/Users/yangxuewu/Downloads/骨钉/11111.png";
-    //  String filename= "/Users/yangxuewu/Downloads/骨钉/A1.png";
-    //String filename= "/Users/yangxuewu/Downloads/骨钉/goodImge.JPG";
-    
-    Mat large = imread(filename);
-    Mat rgb;
-    // downsample and use it for processing
-    pyrDown(large, rgb);  //缩小过程
-    //pyrUp(large,rgb);//  放大过程
-    Mat small;
-    cvtColor(rgb, small, CV_BGR2GRAY);
-    // morphological gradient
-    Mat grad;
-    Mat morphKernel = getStructuringElement(MORPH_ELLIPSE, Size(3, 3));
-    morphologyEx(small, grad, MORPH_GRADIENT, morphKernel); // 开闭运算
-    // binarize
-    Mat bw;
-    threshold(grad, bw, 0.0, 255.0, THRESH_BINARY | THRESH_OTSU); //二值化
-    // connect horizontally oriented regions
-    Mat connected;
-    morphKernel = getStructuringElement(MORPH_RECT, Size(9, 1));
-    morphologyEx(bw, connected, MORPH_CLOSE, morphKernel);
-    // find contours
-    Mat mask = Mat::zeros(bw.size(), CV_8UC1);
-    vector<vector<Point>> contours;
-    vector<Vec4i> hierarchy;
-    findContours(connected, contours, hierarchy, CV_RETR_CCOMP, CV_CHAIN_APPROX_SIMPLE, Point(0, 0));
-    // filter contours
-    
-    Box box;
-    box.min.x = 9999999;
-    box.min.y = 9999999;
-    
-    for(int idx = 0; idx >= 0; idx = hierarchy[idx][0])
-    {
-        Rect rect = boundingRect(contours[idx]);
-        Mat maskROI(mask, rect);
-        maskROI = Scalar(0, 0, 0);
-        // fill the contour
-        drawContours(mask, contours, idx, Scalar(255, 255, 255), CV_FILLED);
-        // ratio of non-zero pixels in the filled region
-        double r = (double)countNonZero(maskROI)/(rect.width*rect.height);
-        
-        if (r >.25 /* assume at least 45% of the area is filled if it contains text */
-            &&(rect.height > 8&& rect.width >8) /* constraints on region size */
-            /* these two conditions alone are not very robust. better to use something
-             like the number of significant peaks in a horizontal projection as a third condition */){
-             //圈出区域
-            //rectangle(rgb, rect, Scalar(0, 0, 0), 2);
-            
-            int x=rect.x;
-            int y= rect.y;
-            Vec2D vec;
-            
-            vec.x = x;
-            vec.y = y;
-            box.add(vec);
-            
-            
-            Vec2D vecMax = vec;
-            vecMax.x += rect.width;
-            vecMax.y += rect.height;
-            box.add(vecMax);
-            
-            Rect myRect(rect.x, rect.y, rect.width, rect.height);
-            Mat gray = rgb(myRect);
-            string s1=to_string(idx);
-            imshow(s1,gray);
-            cout << "Value of str is : " <<idx <<"  "<< x << " " << y << endl;
-            
-          
-        }
-    }
-   
-   
-    
-    //获得截取的最小值
-    Rect newRect(box.min.x, box.min.y, box.max.x- box.min.x,  box.max.y- box.min.y);
-    Mat gray = rgb(newRect);
-    
-    cvtColor(gray, gray, CV_BGR2GRAY);
-    threshold(gray,gray,150,255,THRESH_BINARY);
-   
-    double scale=4;
 
-    Size ResImgSiz = Size(gray.cols*scale, gray.rows*scale);
-    Mat ResImg = Mat(ResImgSiz, gray.type());
-    resize(gray, ResImg, ResImgSiz, CV_INTER_CUBIC);
-   
-    imshow("newRect",ResImg);
-    imwrite(outImagePath,ResImg);
-    
 
-    imshow("游戏原画",rgb);
-    imwrite(result, rgb);
-    waitKey(1000000);
-    
-    return 0;
-}
 
 
 
