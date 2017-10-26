@@ -257,6 +257,76 @@ void imageCvtColor(){
 }
 
 
+int MyfindContours()
+{
+ 
+   // String filename="/Users/yangxuewu/Downloads/myimageGood1.png";
+    //String filename="/Users/yangxuewu/Downloads/G82.jpg";
+    
+    string outImagePath1="/Users/yangxuewu/Downloads/WechatIMG2.jpeg";
+    Mat large = imread(outImagePath1);
+    //进行放大处理
+    double scale=5;
+    Size ResImgSiz = Size(large.cols*scale, large.rows*scale);
+    Mat ResImg = Mat(ResImgSiz, large.type());
+    resize(large, ResImg, ResImgSiz, CV_INTER_CUBIC);
+    
+    Mat rgb;
+    // downsample and use it for processing
+    pyrDown(ResImg, rgb);  //缩小过程
+  
+    Mat small;
+    cvtColor(rgb, small, CV_BGR2GRAY);
+    // morphological gradient
+    Mat grad;
+    Mat morphKernel = getStructuringElement(MORPH_ELLIPSE, Size(3, 3));
+    morphologyEx(small, grad, MORPH_GRADIENT, morphKernel); //形态学梯度
+    // binarize
+    Mat bw;
+    threshold(grad, bw, 0.0, 255.0, THRESH_BINARY | THRESH_OTSU); //二值化
+    // connect horizontally oriented regions
+    Mat connected;
+    morphKernel = getStructuringElement(MORPH_RECT, Size(14, 3));
+    morphologyEx(bw, connected, MORPH_CLOSE, morphKernel);
+    // find contours
+    Mat mask = Mat::zeros(bw.size(), CV_8UC1);
+    vector<vector<Point>> contours;
+    vector<Vec4i> hierarchy;
+    findContours(connected, contours, hierarchy, RETR_CCOMP, CV_CHAIN_APPROX_SIMPLE, Point(0, 0));
+    
+    for(int idx = 0; idx >= 0; idx = hierarchy[idx][0])
+    {
+        Rect rect = boundingRect(contours[idx]);
+        Mat maskROI(mask, rect);
+        maskROI = Scalar(255, 255, 255);
+        // fill the contour
+        drawContours(mask, contours, idx, Scalar(255, 255, 255), CV_FILLED);
+        // ratio of non-zero pixels in the filled region
+        double r = (double)countNonZero(maskROI)/(rect.width*rect.height);
+        
+        if (r >.35 /* assume at least 35% of the area is filled if it contains text */
+            &&(rect.height > 8&& rect.width >8) /* constraints on region size */
+            /* these two conditions alone are not very robust. better to use something
+             like the number of significant peaks in a horizontal projection as a third condition */){
+                 //圈出区域
+                 rectangle(rgb, rect, Scalar(115, 115, 0), 2);
+             
+                 Rect myRect(rect.x, rect.y, rect.width, rect.height);
+                 Mat gray = rgb(myRect);
+                 string s1=to_string(idx);
+                 imshow(s1,gray);
+              //   cout << "Value of str is idx : " <<idx <<" x "<< x << " y " << y <<"  width  " <<rectwidth<<"  height  "<<  rectheight << endl;
+             }
+    }
+
+    imshow("rgb",rgb);
+    waitKey(1000000);
+    
+    return 0;
+}
+
+
+
 
 
 

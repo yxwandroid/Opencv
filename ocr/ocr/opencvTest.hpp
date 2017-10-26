@@ -10,6 +10,7 @@
 #define opencvTest_hpp
 
 #include <stdio.h>
+int MyfindContours();
 int StructuringElement();
 int threshold();
 int calcHist();

@@ -10,16 +10,19 @@
 #include <opencv2/opencv.hpp>
 #include "opencvTest.hpp"
 #include "ocrText.hpp"
+#include "MyfindContours.hpp"
 void resize();
 int findlunkuo();
 int getTextOcr(cv::Mat);
 int findContours();
+void MyconvertTo();
 using namespace cv;
 using namespace std;
 
 int main(int argc, const char * argv[]) {
-   
-    findContours();
+    MyfindContours();
+   // findContours();
+    //getTextOcr();
     return 0;
 }
 
@@ -46,6 +49,7 @@ int getTextOcr(Mat img1){
     String mylang= "/Users/yangxuewu/Desktop/tesseract/tessdata";
     tess->Init(mylang.c_str(), "eng");
     tess->SetVariable("tessedit_char_whitelist","0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ");
+    
     //tess->SetVariable("tessedit_char_whitelist","0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz");
 //    String outImagePath="/Users/yangxuewu/Downloads/eng.png";
 //    String outImagePath1="/Users/yangxuewu/Downloads/ocrtext.png";
@@ -67,6 +71,9 @@ int findContours()
 {
     //    识别成功率比较好的
     String filename="/Users/yangxuewu/Downloads/myimageGood1.png";
+    //String filename="/Users/yangxuewu/Downloads/G82.jpg";
+
+   
     String filename2="/Users/yangxuewu/Downloads/mytex.png";
     String filename4="/Users/yangxuewu/Downloads/WechatIMG11.jpeg";
     String filename5="/Users/yangxuewu/Downloads/Aa.png";
@@ -104,7 +111,7 @@ int findContours()
     Mat mask = Mat::zeros(bw.size(), CV_8UC1);
     vector<vector<Point>> contours;
     vector<Vec4i> hierarchy;
-    findContours(connected, contours, hierarchy, CV_RETR_CCOMP, CV_CHAIN_APPROX_SIMPLE, Point(0, 0));
+    findContours(connected, contours, hierarchy, RETR_CCOMP, CV_CHAIN_APPROX_SIMPLE, Point(0, 0));
     // filter contours
     
     Box box;
@@ -121,15 +128,17 @@ int findContours()
         // ratio of non-zero pixels in the filled region
         double r = (double)countNonZero(maskROI)/(rect.width*rect.height);
         
-        if (r >.35 /* assume at least 45% of the area is filled if it contains text */
-            &&(rect.height > 8&& rect.width >18) /* constraints on region size */
+        if (r >.35 /* assume at least 35% of the area is filled if it contains text */
+            &&(rect.height > 30&& rect.width >90) /* constraints on region size */
             /* these two conditions alone are not very robust. better to use something
              like the number of significant peaks in a horizontal projection as a third condition */){
                  //圈出区域
-                 // rectangle(rgb, rect, Scalar(0, 0, 0), 2);
+                rectangle(rgb, rect, Scalar(0, 0, 0), 2);
                  
                  int x=rect.x;
                  int y= rect.y;
+                 int rectheight= rect.height;
+                 int rectwidth= rect.width;
                  Vec2D vec;
                  
                  vec.x = x;
@@ -146,7 +155,7 @@ int findContours()
                  Mat gray = rgb(myRect);
                  string s1=to_string(idx);
                  imshow(s1,gray);
-                 cout << "Value of str is : " <<idx <<"  "<< x << " " << y << endl;
+                 cout << "Value of str is idx : " <<idx <<" x "<< x << " y " << y <<"  width  " <<rectwidth<<"  height  "<<  rectheight << endl;
              }
     }
     
@@ -156,7 +165,7 @@ int findContours()
     
     cvtColor(gray, gray, CV_BGR2GRAY);
     threshold(gray,gray,130,255,THRESH_BINARY);
-    
+
     //进行放大处理
     double scale=1;
     Size ResImgSiz = Size(gray.cols*scale, gray.rows*scale);
@@ -180,7 +189,7 @@ int findContours()
     imwrite(outImagePath,out);
     
     getTextOcr(out);  //进行文字识别
-    
+//
     imshow("rgb",rgb);
     imwrite(result, rgb);
     waitKey(1000000);
@@ -189,58 +198,20 @@ int findContours()
 }
 
 
+//对比度调整
+void MyconvertTo(){
 
+    String str="/Users/yangxuewu/Downloads/A.JPG";
+    String str2="/Users/yangxuewu/Downloads/resultConvert.JPG";
 
+    Mat image = imread(str);
+    Mat new_image = Mat::zeros( image.size(), image.type() );
+    double alpha=1.0;
+    double beta=1.3;
+    image.convertTo(new_image, -1, alpha, beta);
+    imshow("alpha", new_image);
+    imwrite(str2,  new_image);
+    waitKey(0);
+    return;
+}
 
-
-
-
-
-
-
-
-//int findlunkuo(){
-//    String str="/Users/yangxuewu/Downloads/ocrtext.png";
-//
-//    cv::Mat image = cv::imread(str , 0) ;
-//    std::vector<std::vector<cv::Point>> contours ;
-//    //获取轮廓不包括轮廓内的轮廓
-//    cv::findContours(image , contours ,
-//                     CV_RETR_EXTERNAL , CV_CHAIN_APPROX_NONE) ;
-//    cv::Mat result(image.size() , CV_8U , cv::Scalar(255)) ;
-//    cv::drawContours(result , contours ,
-//                     -1 , cv::Scalar(0) , 2) ;
-//    cv::imshow("resultImage" , result) ;
-//    
-//    //获取所有轮廓包括轮廓内的轮廓
-//    std::vector<std::vector<cv::Point>> allContours ;
-//    cv::Mat allContoursResult(image.size() , CV_8U , cv::Scalar(255)) ;
-//    cv::findContours(image , allContours ,
-//                     CV_RETR_LIST , CV_CHAIN_APPROX_NONE) ;
-//    cv::drawContours(allContoursResult , allContours ,-1 ,
-//                     cv::Scalar(0) , 2) ;
-//    cv::imshow("allContours" , allContoursResult) ;
-//    
-//    //获取轮廓的等级
-//    std::vector<cv::Vec4i> hierarchy ;
-//    cv::findContours(image , contours , hierarchy , CV_RETR_TREE ,
-//                     CV_CHAIN_APPROX_NONE) ;
-//    
-//    cv::waitKey(0) ;  
-//    return 0 ;  
-//}
-//
-//// 图片缩放
-//void resize(){
-//    String str="/Users/yangxuewu/Downloads/result2.png";
-//    Mat gray=imread(str);
-//    double scale=0.4;
-//    Size ResImgSiz = Size(gray.cols*scale, gray.rows*scale);
-//    Mat ResImg = Mat(ResImgSiz, gray.type());
-//    resize(gray, ResImg, ResImgSiz, CV_INTER_CUBIC);
-//    imshow("w", ResImg);
-//    waitKey(0);
-//    
-//
-//
-//}

@@ -55,6 +55,7 @@
 		D32F201C1EB9BCE40036CDAD /* ocrText.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D32F201A1EB9BCE40036CDAD /* ocrText.cpp */; };
 		D32F20211EB9BD470036CDAD /* MycalcHist.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D32F201D1EB9BD470036CDAD /* MycalcHist.cpp */; };
 		D32F20221EB9BD470036CDAD /* opencvTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D32F201F1EB9BD470036CDAD /* opencvTest.cpp */; };
+		D380582F1EBB1317006C6FB1 /* MyfindContours.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D380582D1EBB1317006C6FB1 /* MyfindContours.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -122,6 +123,8 @@
 		D32F201E1EB9BD470036CDAD /* MycalcHist.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = MycalcHist.hpp; sourceTree = "<group>"; };
 		D32F201F1EB9BD470036CDAD /* opencvTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = opencvTest.cpp; sourceTree = "<group>"; };
 		D32F20201EB9BD470036CDAD /* opencvTest.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = opencvTest.hpp; sourceTree = "<group>"; };
+		D380582D1EBB1317006C6FB1 /* MyfindContours.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MyfindContours.cpp; sourceTree = "<group>"; };
+		D380582E1EBB1317006C6FB1 /* MyfindContours.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = MyfindContours.hpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -206,6 +209,8 @@
 				D32F1F621EB9B4C50036CDAD /* main.cpp */,
 				D32F201A1EB9BCE40036CDAD /* ocrText.cpp */,
 				D32F201B1EB9BCE40036CDAD /* ocrText.hpp */,
+				D380582D1EBB1317006C6FB1 /* MyfindContours.cpp */,
+				D380582E1EBB1317006C6FB1 /* MyfindContours.hpp */,
 			);
 			path = ocr;
 			sourceTree = "<group>";
@@ -318,6 +323,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D380582F1EBB1317006C6FB1 /* MyfindContours.cpp in Sources */,
 				D32F20211EB9BD470036CDAD /* MycalcHist.cpp in Sources */,
 				D32F201C1EB9BCE40036CDAD /* ocrText.cpp in Sources */,
 				D32F20221EB9BD470036CDAD /* opencvTest.cpp in Sources */,
@@ -464,6 +470,7 @@
 				D32F1F681EB9B4C50036CDAD /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
